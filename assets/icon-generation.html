@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>A2A Icon Generator</title>
+  <style>
+    body { 
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    svg {
+      border: 1px solid #ccc;
+      margin: 20px;
+    }
+    #icon {
+      width: 512px;
+      height: 512px;
+    }
+  </style>
+</head>
+<body>
+  <h1>A2A Icon Generator</h1>
+  
+  <svg id="icon" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+    <!-- Background -->
+    <rect width="512" height="512" rx="100" fill="#1976d2" />
+    
+    <!-- Left agent -->
+    <circle cx="128" cy="256" r="80" fill="#ffffff" opacity="0.9" />
+    <text x="128" y="285" font-family="Arial, sans-serif" font-size="100" text-anchor="middle" fill="#1976d2">A</text>
+
+    <!-- Connection line -->
+    <path d="M 208 256 L 304 256" stroke="#ffffff" stroke-width="20" stroke-linecap="round" />
+    
+    <!-- Right agent -->
+    <circle cx="384" cy="256" r="80" fill="#ffffff" opacity="0.9" />
+    <text x="384" y="285" font-family="Arial, sans-serif" font-size="100" text-anchor="middle" fill="#1976d2">A</text>
+
+    <!-- Connection dots -->
+    <circle cx="256" cy="256" r="15" fill="#ffffff" />
+    <circle cx="216" cy="256" r="10" fill="#ffffff" />
+    <circle cx="296" cy="256" r="10" fill="#ffffff" />
+  </svg>
+  
+  <p>Save this SVG and convert it to PNG, ICO, and ICNS formats for your app icons.</p>
+</body>
+</html> 

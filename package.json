@@ -1,0 +1,99 @@
+{
+  "name": "a2a-validation-tool",
+  "version": "1.0.0",
+  "description": "Agent-to-Agent (A2A) Protocol Validation Tool",
+  "main": "public/electron.js",
+  "homepage": "./",
+  "private": true,
+  "author": {
+    "name": "LLMx",
+    "email": "llmx.de.info@gmail.com",
+    "url": "https://llmx.de"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.11.0",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.11.16",
+    "@mui/material": "^5.13.2",
+    "electron-is-dev": "^2.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.0.1",
+    "electron": "^25.0.0",
+    "electron-builder": "^23.6.0",
+    "electron-icon-maker": "^0.0.5",
+    "wait-on": "^7.0.1"
+  },
+  "scripts": {
+    "react-start": "PORT=12121 react-scripts start",
+    "react-build": "npm run prepare-icons && react-scripts build",
+    "electron-build": "electron-builder",
+    "build": "npm run react-build && npm run electron-build",
+    "start": "concurrently \"npm run react-start\" \"wait-on http://localhost:12121 && electron .\"",
+    "pack-mac": "npm run react-build && electron-builder --mac",
+    "pack-win": "npm run react-build && electron-builder --win",
+    "pack-linux": "npm run react-build && electron-builder --linux",
+    "prepare-icons": "cp assets/icon.png public/ && echo 'Icons prepared for building'",
+    "generate-icons": "npx electron-icon-maker --input=./assets/icon.png --output=./assets/"
+  },
+  "build": {
+    "appId": "com.a2a.validationtool",
+    "productName": "A2A Validation Tool",
+    "files": [
+      "build/**/*",
+      "node_modules/**/*",
+      "public/electron.js"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    },
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "darkModeSupport": true,
+      "icon": "assets/icon.png"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "assets/icon.png"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Development",
+      "icon": "assets/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
