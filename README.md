@@ -1,6 +1,6 @@
 # A2A Validation Tool
 
-![llmx_a2a_validation_tool_example](https://github.com/user-attachments/assets/86d8c9f2-3353-45e9-adc2-4b96114712d5)
+<img width="1198" alt="llmx_a2a_validation_tool_example" src="https://github.com/user-attachments/assets/d2143c19-eff5-46fa-b547-d541bf4c9bb4" />
 
 
 A desktop application for testing and validating Agent-to-Agent (A2A) protocol implementations. This tool provides a user-friendly interface to interact with A2A agents, manage conversation sessions, and validate protocol compliance.
