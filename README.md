@@ -23,6 +23,34 @@ A desktop application for testing and validating Agent-to-Agent (A2A) protocol i
 
 ### Installation
 
+Go to the [releases page](https://github.com/llmx-de/a2a-validation-tool/releases/latest) and download the latest version for your platform.
+
+#### MacOS
+Download the .dmg file and double click on it to install the application.
+
+#### Windows
+
+Download the .exe file and run it to install the application.
+
+#### Linux
+
+You can install it with one command (recommended):
+
+```bash
+curl -s https://raw.githubusercontent.com/llmx-de/a2a-validation-tool/main/scripts/install.sh | bash
+```
+
+This will automatically download the latest version, make it executable, and create a desktop entry
+.
+
+The same command can also be used to upgrade an existing installation to the latest version.
+
+Alternatively, you can download the .AppImage file and make it executable by running `chmod +x a2a-validation-tool.AppImage` and then run it.
+
+
+
+#### Manual
+
 1. Clone the repository:
    ```bash
    git clone https://github.com/dmi3coder/a2a-validation-tool.git
@@ -38,7 +66,6 @@ A desktop application for testing and validating Agent-to-Agent (A2A) protocol i
    ```bash
    npm start
    ```
-
 This will launch the application in development mode with hot reloading enabled.
 
 ## Building for Production
@@ -104,4 +131,5 @@ Click the "Agent Card" tab to view detailed information about the agent's capabi
 ## License
 
 GPL
+
 
