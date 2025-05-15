@@ -9,7 +9,7 @@ A desktop application for testing and validating Agent-to-Agent (A2A) protocol i
 
 - Connect to multiple A2A agents simultaneously
 - Display and inspect agent card information including capabilities
-- Support for streaming and non-streaming agents
+- Support for streaming(not completely verified) and non-streaming agents
 - Session management with auto-detection of input-required states
 - File attachment support
 - JSON visualization for debugging requests and responses
