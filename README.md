@@ -29,7 +29,11 @@ A desktop application for testing and validating Agent-to-Agent (A2A) protocol i
 Go to the [releases page](https://github.com/llmx-de/a2a-validation-tool/releases/latest) and download the latest version for your platform.
 
 #### MacOS
-Download the .dmg file and double click on it to install the application.
+Download the .zip file and double click on it to extract the application, run:
+```
+xattr -c A2A\ Validation\ Tool.app
+```
+then you can either open it or move to Application page
 
 #### Windows
 
