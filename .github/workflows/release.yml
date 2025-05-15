@@ -35,6 +35,8 @@ jobs:
         run: npm install
 
       - name: Build for ${{ matrix.os }}
+        env:
+          CI: false
         run: ${{ matrix.script }}
 
       - name: Upload artifact
