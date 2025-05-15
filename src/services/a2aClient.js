@@ -240,8 +240,10 @@ class A2AClient {
     
     // Create the JSON-RPC request
     const jsonRpcRequest = this._createJsonRpcRequest('send_task_streaming', params);
-    
+
     try {
+      // Log the actual JSON-RPC payload being sent
+      this._log('info', 'Streaming JSON-RPC payload', jsonRpcRequest);
       this._log('info', 'Sending streaming task request to agent', { 
         url: this.agentUrl,
         method: jsonRpcRequest.method

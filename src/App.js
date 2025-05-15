@@ -423,7 +423,7 @@ function App() {
       id: uuidv4(),
       method: "sendTask",
       params: {
-        taskId: taskId,
+        id: taskId,
         sessionId: sessionId,
         message: {
           role: "user",
