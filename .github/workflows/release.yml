@@ -2,7 +2,7 @@ name: Build and Release
 
 on:
   release:
-    types: [published]
+    types: [created, published]
   push:
     tags:
       - 'v*'
