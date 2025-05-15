@@ -145,7 +145,7 @@ class A2AClient {
     };
     
     // Create the JSON-RPC request
-    const jsonRpcRequest = this._createJsonRpcRequest('send_task', params);
+    const jsonRpcRequest = this._createJsonRpcRequest('tasks/send', params);
     
     try {
       this._log('info', 'Sending task request to agent', { 
@@ -178,6 +178,7 @@ class A2AClient {
       return {
         taskId,
         sessionId: actualSessionId,
+        jsonRpcRequest,
         ...result
       };
     } catch (error) {
@@ -283,7 +284,10 @@ class A2AClient {
             onChunk(jsonResponse);
           }
           
-          return jsonResponse;
+          return {
+            ...jsonResponse,
+            jsonRpcRequest
+          };
         } catch (error) {
           this._log('error', 'Error parsing JSON response', error.message);
           throw error;
@@ -379,12 +383,19 @@ class A2AClient {
       // If we got a complete response, return it instead of making another API call
       if (lastCompleteResponse) {
         this._log('info', 'Returning last complete response from stream', { taskId });
-        return lastCompleteResponse;
+        return {
+          ...lastCompleteResponse,
+          jsonRpcRequest
+        };
       }
       
       // Get final task state if we didn't get a complete response
       this._log('info', 'Fetching final task state after streaming', { taskId });
-      return await this.getTask(taskId);
+      const finalResponse = await this.getTask(taskId);
+      return {
+        ...finalResponse,
+        jsonRpcRequest
+      };
     } catch (error) {
       this._log('error', 'Error in streaming task', error.message);
       throw error;
