@@ -321,10 +321,24 @@ function App() {
       if (response.result.artifacts && Array.isArray(response.result.artifacts)) {
         artifacts = response.result.artifacts;
         log('info', 'Found artifacts', artifacts);
+        
+        // Try to extract content from result artifact
+        for (const artifact of response.result.artifacts) {
+          if (artifact.name === 'result' && artifact.parts && Array.isArray(artifact.parts)) {
+            for (const part of artifact.parts) {
+              if (part.type === 'text' && part.text) {
+                log('info', 'Found text in artifacts.result.parts', part.text);
+                content = part.text;
+                break;
+              }
+            }
+          }
+        }
       }
       
       // Path for agents using status.message.parts format
-      if (response.result.status && response.result.status.message && 
+      if (content === 'No response content found' && 
+          response.result.status && response.result.status.message && 
           response.result.status.message.parts && response.result.status.message.parts.length > 0) {
         for (const part of response.result.status.message.parts) {
           if (part.type === 'text' && part.text) {
@@ -537,7 +551,9 @@ function App() {
           const updated = [...prev[selectedAgent.id]];
           const idx = updated.findIndex(msg => msg.id === userMessageId);
           if (idx !== -1) {
-            updated[idx] = { ...updated[idx], rawResponse: response.jsonRpcRequest };
+            // Make sure we're getting the actual JSON-RPC request object
+            const jsonRpcPayload = response.jsonRpcRequest || requestObject;
+            updated[idx] = { ...updated[idx], rawResponse: jsonRpcPayload };
           }
           return { ...prev, [selectedAgent.id]: updated };
         });
@@ -581,7 +597,9 @@ function App() {
           const updated = [...prev[selectedAgent.id]];
           const idx = updated.findIndex(msg => msg.id === userMessageId);
           if (idx !== -1) {
-            updated[idx] = { ...updated[idx], rawResponse: response.jsonRpcRequest };
+            // Make sure we're getting the actual JSON-RPC request object
+            const jsonRpcPayload = response.jsonRpcRequest || requestObject;
+            updated[idx] = { ...updated[idx], rawResponse: jsonRpcPayload };
           }
           return { ...prev, [selectedAgent.id]: updated };
         });

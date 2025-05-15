@@ -4,11 +4,16 @@ import { v4 as uuidv4 } from 'uuid';
  * A2A Client service for communicating with AI agents
  */
 class A2AClient {
-  constructor(agentUrl) {
+  constructor(agentUrl, options = {}) {
     this.agentUrl = agentUrl;
     this.headers = {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'Origin': window.location.origin,
+      'Access-Control-Allow-Origin': '*',
     };
+    // Polling settings with defaults
+    this.pollInterval = options.pollInterval || 1000; // 1 second by default
+    this.maxPollAttempts = options.maxPollAttempts || 30; // 30 attempts max (30 seconds)
   }
 
   /**
@@ -94,6 +99,56 @@ class A2AClient {
   }
 
   /**
+   * Poll a task until it completes or fails
+   * @param {string} taskId The task ID to poll
+   * @param {string} sessionId The session ID 
+   * @returns {Promise<Object>} The final task result
+   */
+  async pollTaskUntilComplete(taskId, sessionId) {
+    this._log('info', 'Starting task polling', { taskId, sessionId });
+    
+    let attempts = 0;
+    let taskState = null;
+    
+    while (attempts < this.maxPollAttempts) {
+      attempts++;
+      
+      try {
+        const result = await this.getTask(taskId);
+        
+        if (!result || !result.result) {
+          this._log('error', 'Invalid task response', result);
+          throw new Error('Invalid task response structure');
+        }
+        
+        const status = result.result.status;
+        taskState = status && status.state ? status.state : null;
+        
+        this._log('info', `Task poll attempt ${attempts}`, { taskId, state: taskState });
+        
+        // Terminal states
+        if (taskState === 'completed' || taskState === 'failed' || taskState === 'canceled') {
+          this._log('info', 'Task polling complete', { taskId, finalState: taskState });
+          return {
+            taskId,
+            sessionId,
+            ...result
+          };
+        }
+        
+        // Wait before polling again
+        await new Promise(resolve => setTimeout(resolve, this.pollInterval));
+      } catch (error) {
+        this._log('error', 'Error polling task', { taskId, error: error.message });
+        throw error;
+      }
+    }
+    
+    this._log('warn', 'Task polling timed out', { taskId, attempts });
+    throw new Error(`Task polling timed out after ${attempts} attempts`);
+  }
+
+  /**
    * Send a task to the agent
    * @param {string} message The message text
    * @param {Object|null} file Optional file attachment
@@ -175,6 +230,24 @@ class A2AClient {
         taskId
       });
       
+      // Check if the task is in a "submitted" state and needs polling
+      if (result && result.result && result.result.status && result.result.status.state === 'submitted') {
+        this._log('info', 'Task submitted, starting polling', { taskId });
+        
+        // Store the original request before polling
+        const originalRequest = jsonRpcRequest;
+        
+        // Poll until completion
+        const pollingResult = await this.pollTaskUntilComplete(taskId, actualSessionId);
+        
+        // Return the result with the original request attached
+        return {
+          ...pollingResult,
+          jsonRpcRequest: originalRequest
+        };
+      }
+      
+      // If not in submitted state, return the result directly
       return {
         taskId,
         sessionId: actualSessionId,
@@ -240,7 +313,7 @@ class A2AClient {
     };
     
     // Create the JSON-RPC request
-    const jsonRpcRequest = this._createJsonRpcRequest('send_task_streaming', params);
+    const jsonRpcRequest = this._createJsonRpcRequest('tasks/send', params);
 
     try {
       // Log the actual JSON-RPC payload being sent
@@ -416,7 +489,7 @@ class A2AClient {
     };
     
     // Create the JSON-RPC request
-    const jsonRpcRequest = this._createJsonRpcRequest('get_task', params);
+    const jsonRpcRequest = this._createJsonRpcRequest('tasks/get', params);
     
     try {
       const response = await fetch(this.agentUrl, {

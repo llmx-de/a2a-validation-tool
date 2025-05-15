@@ -150,8 +150,14 @@ function createWindow() {
       nodeIntegration: true,
       contextIsolation: false,
       enableRemoteModule: true,
+      webSecurity: false, // Disable web security to bypass CORS
     },
     show: false, // Don't show until ready-to-show event
+  });
+
+  // Disable the same-origin policy to allow cross-origin requests
+  mainWindow.webContents.session.webRequest.onBeforeSendHeaders((details, callback) => {
+    callback({ requestHeaders: { ...details.requestHeaders } });
   });
 
   mainWindow.loadURL(

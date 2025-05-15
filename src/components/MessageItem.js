@@ -68,8 +68,16 @@ function MessageItem({ message }) {
   };
   
   const stateInfo = getStateInfo();
-  // Use the raw response data instead of simplified object
+  
+  // Make sure we display the actual JSON-RPC request for user messages
   const rawResponseData = message.rawResponse || message;
+  
+  // Check if this is a user message with a real JSON-RPC request
+  const hasJsonRpcRequest = isUser && 
+    message.rawResponse && 
+    message.rawResponse.jsonrpc === '2.0' && 
+    message.rawResponse.method && 
+    message.rawResponse.params;
 
   // Render an artifact
   const renderArtifact = (artifact, index) => {
@@ -187,10 +195,10 @@ function MessageItem({ message }) {
           <Box sx={{ ml: 1 }}>
             <JsonViewer 
               data={rawResponseData} 
-              buttonLabel="Raw" 
+              buttonLabel={hasJsonRpcRequest ? "RPC" : "Raw"} 
               buttonSize="small" 
               buttonVariant="text" 
-              buttonColor="primary"
+              buttonColor={hasJsonRpcRequest ? "success" : "primary"}
               buttonIcon={<DataObjectIcon fontSize="small" />}
             />
           </Box>
@@ -243,4 +251,4 @@ function MessageItem({ message }) {
   );
 }
 
-export default MessageItem; 
+export default MessageItem;
