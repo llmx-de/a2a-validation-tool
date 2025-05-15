@@ -6,6 +6,8 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    # Allows manual triggering of this workflow
 
 jobs:
   build:
