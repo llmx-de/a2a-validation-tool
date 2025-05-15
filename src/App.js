@@ -423,7 +423,7 @@ function App() {
       id: uuidv4(),
       method: "sendTask",
       params: {
-        taskId: taskId,
+        id: taskId,
         sessionId: sessionId,
         message: {
           role: "user",
@@ -449,8 +449,9 @@ function App() {
     }
     
     // Add user message to chat history
+    const userMessageId = Date.now().toString();
     const userMessage = {
-      id: Date.now().toString(),
+      id: userMessageId,
       sender: 'user',
       content: message,
       file: file,
@@ -531,6 +532,15 @@ function App() {
           }
         );
         
+        // Override the user message to show the real request payload
+        setChats(prev => {
+          const updated = [...prev[selectedAgent.id]];
+          const idx = updated.findIndex(msg => msg.id === userMessageId);
+          if (idx !== -1) {
+            updated[idx] = { ...updated[idx], rawResponse: response.jsonRpcRequest };
+          }
+          return { ...prev, [selectedAgent.id]: updated };
+        });
         log('info', 'Streaming completed, final content', { content: streamContent, state: conversationState });
         content = streamContent;
         
@@ -543,6 +553,8 @@ function App() {
             // Extract final artifacts if available
             const { artifacts: finalArtifacts } = extractFromResponse(response);
             
+            const { jsonRpcRequest, ...agentPayload } = response;
+            
             updatedMessages[loadingMessageIndex] = {
               id: taskId,
               sender: 'agent',
@@ -551,7 +563,7 @@ function App() {
               artifacts: finalArtifacts,
               isLoading: false,
               timestamp: new Date().toISOString(),
-              rawResponse: response
+              rawResponse: agentPayload
             };
           }
           
@@ -564,6 +576,15 @@ function App() {
         // For non-streaming responses
         log('info', 'Sending non-streaming request', { sessionId });
         response = await client.sendTask(message, file, sessionId, taskId);
+        // Override the user message to show the real request payload
+        setChats(prev => {
+          const updated = [...prev[selectedAgent.id]];
+          const idx = updated.findIndex(msg => msg.id === userMessageId);
+          if (idx !== -1) {
+            updated[idx] = { ...updated[idx], rawResponse: response.jsonRpcRequest };
+          }
+          return { ...prev, [selectedAgent.id]: updated };
+        });
         log('info', 'Received non-streaming response', response);
         
         // Extract content and state from the response
@@ -579,6 +600,8 @@ function App() {
           const loadingMessageIndex = updatedMessages.findIndex(msg => msg.id === loadingMessage.id);
           
           if (loadingMessageIndex !== -1) {
+            
+            const { jsonRpcRequest, ...agentPayload } = response;
             updatedMessages[loadingMessageIndex] = {
               id: response.taskId || Date.now().toString(),
               sender: 'agent',
@@ -586,7 +609,7 @@ function App() {
               state: conversationState,
               artifacts: extractedArtifacts,
               timestamp: new Date().toISOString(),
-              rawResponse: response
+              rawResponse: agentPayload
             };
           }
           
